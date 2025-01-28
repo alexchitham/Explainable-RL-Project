@@ -1,0 +1,6 @@
+.venv/
+*.zip
+tensorboard/
+experimental_code/
+__pycache__/
+*.jpg
