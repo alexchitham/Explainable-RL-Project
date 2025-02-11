@@ -9,14 +9,20 @@ from stable_baselines3.common.monitor import Monitor
 # Function to create the gym environment using a recommended config
 def create_gym_env():
 
+    render_scaling = 14
+    obs_scaling = 1.75
+
     env_config = {
         "observation": {
             "type": "GrayscaleObservation",
             "observation_shape": (128, 64),
             "stack_size": 4,
             "weights": [0.2989, 0.5870, 0.1140],  # Weights for RGB conversion
-            "scaling": 1.75,
+            "scaling": obs_scaling,
         },
+        "screen_width": 128 * (render_scaling / obs_scaling),
+        "screen_height": 64 * (render_scaling / obs_scaling),
+        "scaling" : render_scaling
     }
 
     # Create the gym environment
