@@ -71,16 +71,18 @@ if __name__ == "__main__":
     obs = vec_env.reset()
 
     # Create the agent using a recommended config
-    agent = DQN("CnnPolicy", vec_env, 
-        learning_rate=5e-4,
-        buffer_size=15000,
-        learning_starts=200,
-        batch_size=32,
-        gamma=0.8,
-        train_freq=1,
-        gradient_steps=1,
-        target_update_interval=50,
-        exploration_fraction=0.7,
+    agent = DQN(
+        "CnnPolicy",
+        vec_env,
+        learning_rate=2.5e-4,
+        buffer_size=5000,
+        learning_starts=1000,
+        batch_size=64,
+        gamma=0.99,
+        train_freq=(1, "step"),
+        gradient_steps=2,
+        target_update_interval=5000,
+        exploration_fraction=0.3,
         verbose=1,
         tensorboard_log="tensorboard"
     )
