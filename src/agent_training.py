@@ -40,7 +40,7 @@ def create_gym_env():
     }
 
     # Create the gym environment
-    env = gymnasium.make('highway-fast-v0', render_mode='rgb_array', config=env_config)
+    env = gymnasium.make('highway-v0', render_mode='rgb_array', config=env_config)
 
     # The monitor wrapper allows important metrics to be tracked during training
     env = Monitor(env)
@@ -71,23 +71,27 @@ if __name__ == "__main__":
     obs = vec_env.reset()
 
     # Create the agent using a recommended config
-    agent = DQN("CnnPolicy", vec_env, 
-        learning_rate=5e-4,
-        buffer_size=15000,
-        learning_starts=200,
-        batch_size=32,
-        gamma=0.8,
-        train_freq=1,
-        gradient_steps=1,
-        target_update_interval=50,
-        exploration_fraction=0.7,
+    agent = DQN(
+        "CnnPolicy",
+        vec_env,
+        learning_rate=2.5e-4,
+        buffer_size=5000,
+        learning_starts=1000,
+        batch_size=64,
+        gamma=0.99,
+        train_freq=(1, "step"),
+        gradient_steps=2,
+        target_update_interval=5000,
+        exploration_fraction=0.3,
         verbose=1,
         tensorboard_log="tensorboard"
     )
 
     # Train the agent on the environment
-    agent.learn(total_timesteps=int(1e3), log_interval=100, progress_bar=True)
+    agent.learn(total_timesteps=int(1e5), log_interval=100, progress_bar=True)
 
     # Save the trained agent to a zip file
     agent.save("dqn_highway")
+
+    vec_env.close()
 
