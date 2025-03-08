@@ -1,9 +1,23 @@
 import gymnasium
+from enum import Enum
 
 import highway_env
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
+
+
+# Enum containing the actions and their corresponding index
+class discrete_meta_actions(Enum):
+    LANE_LEFT = 0
+    IDLE = 1
+    LANE_RIGHT = 2
+    FASTER = 3
+    SLOWER = 4
+
+# Function to retrieve the name of the action from its index
+def get_action_name(index):
+    return discrete_meta_actions(index).name
 
 
 # Function to create the gym environment using a recommended config
