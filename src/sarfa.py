@@ -97,21 +97,18 @@ class sarfa_saliency_map:
     # Function to apply a blur around a pixel in the agent's observation
     def perturb_state(self, pixel_row, pixel_col):
 
-        # Create the Gaussian mask
-        mask = np.zeros(self.map.shape)
+        # Define constants for use in the Gaussian mask
         sigma_sqr = 25.0
         denom_gaus = 2 * np.pi * sigma_sqr
 
-        for row in range(mask.shape[0]):
-            for col in range(mask.shape[1]):
-    
-                x_gaus_sqr = (row - pixel_row) ** 2
-                y_gaus_sqr = (col - pixel_col) ** 2
-                exponent_gaus = np.exp(-1 * ((x_gaus_sqr + y_gaus_sqr) / (2 * sigma_sqr)))
-                
-                mask[row,col] = np.clip(exponent_gaus / denom_gaus, 1e-10, 1)
-
-        # Normalise the mask to [0,1]
+        # Create the Gaussian mask using numpy broadcasting
+        row, col = np.indices(self.map[0].shape)
+        x_gaus_sqr = (row - pixel_row) ** 2
+        y_gaus_sqr = (col - pixel_col) ** 2
+        exponent_gaus = np.exp(-1 * ((x_gaus_sqr + y_gaus_sqr) / (2 * sigma_sqr)))
+        
+        # Set a minimum value in the mask and normalise to [0,1]
+        mask = np.clip(exponent_gaus / denom_gaus, 1e-10, 1)
         mask = mask / np.max(mask)
 
         # Apply the localised blur and scale back up to [0,255]
