@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 from agent_training import load_dqn_agent, create_vec_env, get_action_name
 from collections import deque
+import os
 
 
 class sarfa_saliency_map:
@@ -224,45 +225,49 @@ class sarfa_saliency_map:
     # Function to just save the final blended renders
     def save_heatmaps(self, directory, suffix):
 
+        new_path = directory + "/set" + str(suffix)
+        os.mkdir(new_path)
+
+        # Print the best action
+        print("Best action: ", get_action_name(self.best_action))
+
         # Save heatmap overlays
-        self.save_rgb_image(self.blended_renders[0], directory + str(suffix) + "/blended_render0.jpg")
-        self.save_rgb_image(self.blended_renders[1], directory + str(suffix) + "/blended_render1.jpg")
-        self.save_rgb_image(self.blended_renders[2], directory + str(suffix) + "/blended_render2.jpg")
-        self.save_rgb_image(self.blended_renders[3], directory + str(suffix) + "/blended_render3.jpg")
+        self.save_rgb_image(self.blended_renders[0], new_path + "/blended_render0.jpg")
+        self.save_rgb_image(self.blended_renders[1], new_path + "/blended_render1.jpg")
+        self.save_rgb_image(self.blended_renders[2], new_path + "/blended_render2.jpg")
+        self.save_rgb_image(self.blended_renders[3], new_path + "/blended_render3.jpg")
 
 
     # Function to save all the images relevant to the creation of the heatmaps
     def save_all_images(self, directory, suffix):
 
+        # Save heatmap overlays
+        self.save_heatmaps(directory, suffix) 
+        new_path = directory + "/set" + str(suffix)
+
         # Save agent observation
-        self.save_grey_image(np.swapaxes(self.agent_obs[0], 0, 1), directory + str(suffix) + "/agent_obs_frame_0.jpg")
-        self.save_grey_image(np.swapaxes(self.agent_obs[1], 0, 1), directory + str(suffix) + "/agent_obs_frame_1.jpg")
-        self.save_grey_image(np.swapaxes(self.agent_obs[2], 0, 1), directory + str(suffix) + "/agent_obs_frame_2.jpg")
-        self.save_grey_image(np.swapaxes(self.agent_obs[3], 0, 1), directory + str(suffix) + "/agent_obs_frame_3.jpg")
+        self.save_grey_image(np.swapaxes(self.agent_obs[0], 0, 1), new_path + "/agent_obs_frame_0.jpg")
+        self.save_grey_image(np.swapaxes(self.agent_obs[1], 0, 1), new_path + "/agent_obs_frame_1.jpg")
+        self.save_grey_image(np.swapaxes(self.agent_obs[2], 0, 1), new_path + "/agent_obs_frame_2.jpg")
+        self.save_grey_image(np.swapaxes(self.agent_obs[3], 0, 1), new_path + "/agent_obs_frame_3.jpg")
 
         # Save full blurred states
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[0], 0, 1), directory + str(suffix) + "/blurred_whole_state_0.jpg")
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[1], 0, 1), directory + str(suffix) + "/blurred_whole_state_1.jpg")
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[2], 0, 1), directory + str(suffix) + "/blurred_whole_state_2.jpg")
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[3], 0, 1), directory + str(suffix) + "/blurred_whole_state_3.jpg")
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[0], 0, 1), new_path + "/blurred_whole_state_0.jpg")
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[1], 0, 1), new_path + "/blurred_whole_state_1.jpg")
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[2], 0, 1), new_path + "/blurred_whole_state_2.jpg")
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[3], 0, 1), new_path + "/blurred_whole_state_3.jpg")
 
         # Save blurred observation
-        self.save_grey_image(np.swapaxes(self.example_blurs[0], 0, 1), directory + str(suffix) + "/local_blur_0.jpg")
-        self.save_grey_image(np.swapaxes(self.example_blurs[1], 0, 1), directory + str(suffix) + "/local_blur_1.jpg")
-        self.save_grey_image(np.swapaxes(self.example_blurs[2], 0, 1), directory + str(suffix) + "/local_blur_2.jpg")
-        self.save_grey_image(np.swapaxes(self.example_blurs[3], 0, 1), directory + str(suffix) + "/local_blur_3.jpg")
+        self.save_grey_image(np.swapaxes(self.example_blurs[0], 0, 1), new_path + "/local_blur_0.jpg")
+        self.save_grey_image(np.swapaxes(self.example_blurs[1], 0, 1), new_path + "/local_blur_1.jpg")
+        self.save_grey_image(np.swapaxes(self.example_blurs[2], 0, 1), new_path + "/local_blur_2.jpg")
+        self.save_grey_image(np.swapaxes(self.example_blurs[3], 0, 1), new_path + "/local_blur_3.jpg")
 
         # Save upscaled heat maps
-        self.save_grey_image(self.upscaled_map[0], directory + str(suffix) + "/upscaled_map0.jpg")
-        self.save_grey_image(self.upscaled_map[1], directory + str(suffix) + "/upscaled_map1.jpg")
-        self.save_grey_image(self.upscaled_map[2], directory + str(suffix) + "/upscaled_map2.jpg")
-        self.save_grey_image(self.upscaled_map[3], directory + str(suffix) + "/upscaled_map3.jpg")
-
-        # Save heatmap overlays
-        self.save_heatmaps(directory, suffix)        
-
-        # Print the best action
-        print("Best action: ", get_action_name(self.best_action))
+        self.save_grey_image(self.upscaled_map[0], new_path + "/upscaled_map0.jpg")
+        self.save_grey_image(self.upscaled_map[1], new_path + "/upscaled_map1.jpg")
+        self.save_grey_image(self.upscaled_map[2], new_path + "/upscaled_map2.jpg")
+        self.save_grey_image(self.upscaled_map[3], new_path + "/upscaled_map3.jpg")       
 
 
 
@@ -305,7 +310,7 @@ if __name__ == "__main__":
     env = create_vec_env()
 
     # Run SARFA over a number of episodes
-    for _ in range(1):
+    for ep in range(1):
 
         # Reset for new episode
         done = False
@@ -332,7 +337,7 @@ if __name__ == "__main__":
             if step_count == 10:
                 saliency_map_obj = create_saliency_map(state, recent_renders, q_values, agent)
                 saliency_map_obj.create_overlay_img(step_count)
-                saliency_map_obj.save_all_images("test_save_images", 1)
+                saliency_map_obj.save_heatmaps("sarfa_heatmaps", str(ep) + "_" + str(step_count))
 
             # if step_count == 11:
             #     saliency_map_obj = create_saliency_map(state, frame, q_values, agent)
