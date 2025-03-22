@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 from agent_training import load_dqn_agent, create_vec_env
 from xrl_method import xrl_method
+from utils import get_q_values
 from collections import deque
 
 
@@ -136,20 +137,6 @@ def create_saliency_map(agent_obs, rendered_states, q_values, agent):
     saliency_map.upscale_map()
 
     return saliency_map
-
-
-def get_q_values(agent, state):
-
-    # Convert the state to a PyTorch tensor
-    obs_tensor, _ = agent.policy.obs_to_tensor(state)
-
-    # Pass the observation through the Q-Network
-    q_values = (agent.policy.q_net(obs_tensor))
-
-    # Remove from backprop -> move to cpu -> convert to numpy -> remove batch dimension
-    q_values = q_values.detach().cpu().numpy().squeeze()
-
-    return q_values    
 
 
 
