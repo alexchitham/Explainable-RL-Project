@@ -1,11 +1,8 @@
 
 import cv2
 import numpy as np
-from PIL import Image
-from agent_training import load_dqn_agent, create_vec_env
 from xrl_method import xrl_method
 from utils import get_q_values
-from collections import deque
 
 
 class sarfa_saliency_map(xrl_method):
@@ -119,73 +116,4 @@ class sarfa_saliency_map(xrl_method):
 
                     # Calculate the saliency and insert into the map
                     self.map[frame, row, col] = self.calculate_feature_saliency(blurred_q_values)
-
-
-    
-def create_saliency_map(agent_obs, rendered_states, q_values, agent):
-
-    # Remove the batch dimension before passing through to the saliency map object
-    batchless_state = np.squeeze(agent_obs)
-
-    # Create a saliency map object
-    saliency_map = sarfa_saliency_map(batchless_state, rendered_states, q_values)
-
-    # Calculate the saliency for each pixel
-    saliency_map.calculate_saliency(agent)
-
-    # Upscale the saliency map to match the rendered image
-    saliency_map.upscale_map()
-
-    return saliency_map
-
-
-
-if __name__ == "__main__":
-
-    agent = load_dqn_agent("dqn_highway_norm_500K.zip")
-    env = create_vec_env()
-
-    # Run SARFA over a number of episodes
-    for ep in range(1):
-
-        # Reset for new episode
-        done = False
-        state = env.reset()
-        step_count = 0
-        recent_renders = deque(maxlen=4)
-
-        # Run until the episode is finished
-        while not done:
-
-            # Predict the most optimal action
-            best_action, _ = agent.predict(state, deterministic=True)
-
-            # Extract the q-values from the network
-            q_values = get_q_values(agent, state)
-
-            # Create saliency map for the current state
-            frame = env.get_images()[0]
-            # frame = env.render(mode="rgb_array")
-
-            # Store the most recent frames
-            recent_renders.append(frame)
-
-            if step_count == 10:
-                saliency_map_obj = create_saliency_map(state, recent_renders, q_values, agent)
-                saliency_map_obj.create_overlay_img(step_count)
-                saliency_map_obj.save_heatmaps("sarfa_heatmaps", str(ep) + "_" + str(step_count))
-
-            # if step_count == 11:
-            #     saliency_map_obj = create_saliency_map(state, frame, q_values, agent)
-            #     saliency_map_obj.create_overlay_img(step_count)
-            #     saliency_map_obj.save_all_images("test_save_images", 2)
-
-            # if len(recent_renders) >= 4: 
-
-            # Take the action in the environment
-            state, reward, done, info = env.step(best_action)
-            step_count += 1
-
-
-    env.close()
 
