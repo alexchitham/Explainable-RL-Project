@@ -5,6 +5,7 @@ import highway_env
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.utils import get_schedule_fn
 
 
 # Enum containing the actions and their corresponding index
@@ -60,7 +61,8 @@ def create_vec_env():
 # Load the trained agent from the zip file
 def load_dqn_agent(filename):
 
-    agent = DQN.load(filename)
+    agent = DQN.load(filename, custom_objects={"buffer_size": 1, "lr_schedule": get_schedule_fn(2.5e-4),
+    "exploration_schedule": get_schedule_fn(0.05)})
     return agent
 
 
