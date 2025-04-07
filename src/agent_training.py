@@ -1,6 +1,7 @@
 import gymnasium
 from enum import Enum
-
+import torch
+import numpy as np
 import highway_env
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
@@ -19,6 +20,11 @@ class discrete_meta_actions(Enum):
 # Function to retrieve the name of the action from its index
 def get_action_name(index):
     return discrete_meta_actions(index).name
+
+
+# Function to retrieve the number of actions
+def get_action_size():
+    return len(discrete_meta_actions)
 
 
 # Function to create the gym environment using a recommended config
@@ -48,6 +54,14 @@ def create_gym_env():
     env.reset()
     
     return env
+
+
+# Function to retrieve the state size
+def get_env_size():
+    env = create_vec_env()
+    state = env.reset()
+    batchless_state = np.squeeze(state)
+    return batchless_state.shape
 
 
 # Function to create the SB3 vector environment from the gym environment
