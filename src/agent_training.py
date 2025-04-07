@@ -73,9 +73,9 @@ def create_vec_env():
 
 
 # Load the trained agent from the zip file
-def load_dqn_agent(filename):
+def load_dqn_agent(filename, device="cpu"):
 
-    agent = DQN.load(filename, custom_objects={"buffer_size": 1, "lr_schedule": get_schedule_fn(2.5e-4),
+    agent = DQN.load(filename, device=device, custom_objects={"buffer_size": 1, "lr_schedule": get_schedule_fn(2.5e-4),
     "exploration_schedule": get_schedule_fn(0.05)})
     return agent
 
