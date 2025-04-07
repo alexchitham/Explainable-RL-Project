@@ -80,7 +80,61 @@ def load_dqn_agent(filename, device="cpu"):
     return agent
 
 
-if __name__ == "__main__":
+# Function to generate a steady state distribution through agent experience
+def create_steady_state_dis(num_states = 100000):
+
+    agent = load_dqn_agent("dqn_highway_norm_200K.zip")
+    env = create_vec_env()
+    state = env.reset()
+
+    # Create a blank array to store the states
+    steady_states = np.empty((num_states, state.shape[-3], state.shape[-2], state.shape[-1]), dtype=np.uint8)
+
+    # Run episodes until we have the required number of states
+    state_count = 0
+    while state_count < num_states:
+
+        # Reset for new episode
+        done = False
+        state = env.reset()
+        step_counter = 0
+
+        # Run until the episode is finished
+        while not done:
+
+            if state_count == num_states:
+                break
+
+            step_counter += 1
+
+            # Extract the current state by removing the batch
+            batchless_state = np.squeeze(state)
+
+            # Save the current state
+            if step_counter >= 4:
+                steady_states[state_count] = batchless_state
+                state_count += 1
+
+            # Predict the most optimal action
+            best_action, _ = agent.predict(state, deterministic=True)
+
+            # Take the action in the environment
+            state, _, done, _ = env.step(best_action)
+            
+            if state_count % 10000 == 0:
+                print("Number of states saved: ", state_count, flush=True)
+
+    env.close()
+
+    # Save a compressed version of the states
+    states_tensor = torch.tensor(steady_states, dtype=torch.uint8)
+    file_name = "steady_states" + str(num_states) + ".pt"
+    torch.save(states_tensor, file_name)
+
+    return file_name
+
+
+def agent_training_loop(): 
 
     # Create the environment
     vec_env = create_vec_env()
@@ -110,4 +164,10 @@ if __name__ == "__main__":
     agent.save("dqn_highway")
 
     vec_env.close()
+
+
+if __name__ == "__main__":
+
+    agent_training_loop()
+    # filename = create_steady_state_dis(num_states=100000)
 
