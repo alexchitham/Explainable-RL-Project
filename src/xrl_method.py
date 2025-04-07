@@ -13,7 +13,6 @@ class xrl_method:
         self.normalised_map = None
         self.upscaled_map = None
         self.blended_renders = None
-        self.example_blurs = []
 
         # Set up variables for agent observation
         self.agent_obs = agent_obs
@@ -142,18 +141,6 @@ class xrl_method:
         self.save_grey_image(np.swapaxes(self.agent_obs[1], 0, 1), new_path + "/agent_obs_frame_1.jpg")
         self.save_grey_image(np.swapaxes(self.agent_obs[2], 0, 1), new_path + "/agent_obs_frame_2.jpg")
         self.save_grey_image(np.swapaxes(self.agent_obs[3], 0, 1), new_path + "/agent_obs_frame_3.jpg")
-
-        # Save full blurred states
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[0], 0, 1), new_path + "/blurred_whole_state_0.jpg")
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[1], 0, 1), new_path + "/blurred_whole_state_1.jpg")
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[2], 0, 1), new_path + "/blurred_whole_state_2.jpg")
-        self.save_grey_image(np.swapaxes(self.blurred_whole_state[3], 0, 1), new_path + "/blurred_whole_state_3.jpg")
-
-        # Save blurred observation
-        self.save_grey_image(np.swapaxes(self.example_blurs[0], 0, 1), new_path + "/local_blur_0.jpg")
-        self.save_grey_image(np.swapaxes(self.example_blurs[1], 0, 1), new_path + "/local_blur_1.jpg")
-        self.save_grey_image(np.swapaxes(self.example_blurs[2], 0, 1), new_path + "/local_blur_2.jpg")
-        self.save_grey_image(np.swapaxes(self.example_blurs[3], 0, 1), new_path + "/local_blur_3.jpg")
 
         # Save upscaled heat maps
         self.save_grey_image(self.upscaled_map[0], new_path + "/upscaled_map0.jpg")

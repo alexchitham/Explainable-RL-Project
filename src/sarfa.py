@@ -9,7 +9,9 @@ class sarfa_saliency_map(xrl_method):
 
     def __init__(self, agent_obs, rendered_states, q_values):
 
-        super().__init__(agent_obs, rendered_states, q_values)        
+        super().__init__(agent_obs, rendered_states, q_values)
+
+        self.example_blurs = []    
 
         # Calculate probability used to find specific changes
         self.exp_q_values = np.exp(self.q_values)
@@ -116,4 +118,21 @@ class sarfa_saliency_map(xrl_method):
 
                     # Calculate the saliency and insert into the map
                     self.map[frame, row, col] = self.calculate_feature_saliency(blurred_q_values)
+
+
+    def save_intermediate_blurs(self, directory, suffix):
+
+        new_path = directory + "/set" + str(suffix)
+
+        # Save full blurred states
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[0], 0, 1), new_path + "/blurred_whole_state_0.jpg")
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[1], 0, 1), new_path + "/blurred_whole_state_1.jpg")
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[2], 0, 1), new_path + "/blurred_whole_state_2.jpg")
+        self.save_grey_image(np.swapaxes(self.blurred_whole_state[3], 0, 1), new_path + "/blurred_whole_state_3.jpg")
+
+        # Save blurred observation
+        self.save_grey_image(np.swapaxes(self.example_blurs[0], 0, 1), new_path + "/local_blur_0.jpg")
+        self.save_grey_image(np.swapaxes(self.example_blurs[1], 0, 1), new_path + "/local_blur_1.jpg")
+        self.save_grey_image(np.swapaxes(self.example_blurs[2], 0, 1), new_path + "/local_blur_2.jpg")
+        self.save_grey_image(np.swapaxes(self.example_blurs[3], 0, 1), new_path + "/local_blur_3.jpg")
 
