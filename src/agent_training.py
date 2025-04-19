@@ -81,9 +81,9 @@ def load_dqn_agent(filename, device="cpu"):
 
 
 # Function to generate a steady state distribution through agent experience
-def create_steady_state_dis(num_states = 100000):
+def create_steady_state_dis(agent_directory, num_states = 100000):
 
-    agent = load_dqn_agent("dqn_highway_norm_200K.zip")
+    agent = load_dqn_agent(agent_directory)
     env = create_vec_env()
     state = env.reset()
 
@@ -168,6 +168,7 @@ def agent_training_loop():
 
 if __name__ == "__main__":
 
+    agent_directory = "highway-env/agents/dqn_highway_norm_200K.zip"
     agent_training_loop()
-    # filename = create_steady_state_dis(num_states=100000)
+    # filename = create_steady_state_dis(agent_directory, num_states=100000)
 

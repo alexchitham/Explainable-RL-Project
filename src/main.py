@@ -7,9 +7,9 @@ from sarfa import sarfa_saliency_map
 from sverl import sverl_saliency_map
 
 
-def test_env_loop():
+def test_env_loop(agent_directory):
 
-    agent = load_dqn_agent("dqn_highway_norm_500K.zip")
+    agent = load_dqn_agent(agent_directory)
     vec_env = create_vec_env()
 
         # Run a few episodes
@@ -65,9 +65,9 @@ def create_sverl_map(agent_obs, rendered_states, q_values, shapley_func_weights_
 
 
 
-def main_xrl_loop():
+def main_xrl_loop(agent_directory, images_directory, shapley_weights_directory):
 
-    agent = load_dqn_agent("dqn_highway_norm_200K.zip")
+    agent = load_dqn_agent(agent_directory)
     env = create_vec_env()
 
     # Run SARFA over a number of episodes
@@ -98,11 +98,11 @@ def main_xrl_loop():
             if step_count == 10:
                 sarfa_map_obj = create_sarfa_saliency_map(state, recent_renders, q_values, agent)
                 sarfa_map_obj.create_overlay_img()
-                sarfa_map_obj.save_heatmaps("sarfa_heatmaps", str(ep) + "_" + str(step_count))
+                sarfa_map_obj.save_heatmaps(images_directory + "/sarfa_heatmaps", str(ep) + "_" + str(step_count))
 
-                sverl_map_obj = create_sverl_map(state, recent_renders, q_values, "shapley_func_weights/step100000_1")
+                sverl_map_obj = create_sverl_map(state, recent_renders, q_values, shapley_weights_directory)
                 sverl_map_obj.create_overlay_img()
-                sverl_map_obj.save_heatmaps("sverl_heatmaps", str(ep) + "_" + str(step_count))
+                sverl_map_obj.save_heatmaps(images_directory + "/sverl_heatmaps", str(ep) + "_" + str(step_count))
 
             # if len(recent_renders) >= 4: 
 
@@ -117,5 +117,9 @@ def main_xrl_loop():
 
 if __name__ == "__main__":
 
-    # test_env_loop()
-    main_xrl_loop()
+    agent_directory = "highway-env/agents/dqn_highway_norm_200K.zip"
+    images_directory = "highway-env/images"
+    shapley_weights_directory = "highway-env/sverl/shapley_func_weights/step100000_1"
+
+    # test_env_loop(agent_directory)
+    main_xrl_loop(agent_directory, images_directory, shapley_weights_directory)
