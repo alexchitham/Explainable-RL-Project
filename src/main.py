@@ -4,6 +4,7 @@ from agent_training import load_dqn_agent, create_vec_env
 import numpy as np
 from utils import get_q_values
 from sarfa import sarfa_saliency_map
+from sverl import sverl_saliency_map
 
 
 def test_env_loop():
@@ -46,6 +47,24 @@ def create_sarfa_saliency_map(agent_obs, rendered_states, q_values, agent):
     return saliency_map
 
 
+def create_sverl_map(agent_obs, rendered_states, q_values, shapley_func_weights_dir):
+
+    # Remove the batch dimension before passing through to the saliency map object
+    batchless_state = np.squeeze(agent_obs)
+
+    # Create the SVERL map object
+    sverl_object = sverl_saliency_map(batchless_state, rendered_states, q_values, shapley_func_weights_dir)
+
+    # Use the object to make predictions
+    sverl_object.predict_shapley_values()
+
+    # Upscale the generated map
+    sverl_object.upscale_map()
+
+    return sverl_object
+
+
+
 def main_xrl_loop():
 
     agent = load_dqn_agent("dqn_highway_norm_200K.zip")
@@ -81,6 +100,9 @@ def main_xrl_loop():
                 sarfa_map_obj.create_overlay_img()
                 sarfa_map_obj.save_heatmaps("sarfa_heatmaps", str(ep) + "_" + str(step_count))
 
+                sverl_map_obj = create_sverl_map(state, recent_renders, q_values, "shapley_func_weights/step100000_1")
+                sverl_map_obj.create_overlay_img()
+                sverl_map_obj.save_heatmaps("sverl_heatmaps", str(ep) + "_" + str(step_count))
 
             # if len(recent_renders) >= 4: 
 
