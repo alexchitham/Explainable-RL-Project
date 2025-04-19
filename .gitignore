@@ -3,6 +3,10 @@
 tensorboard/
 experimental_code/
 __pycache__/
+characteristic_func_weights/
+shapley_func_weights/
 *.jpg
 *.csv
 *.pt
+*.txt
+*.png
