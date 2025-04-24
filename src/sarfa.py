@@ -120,9 +120,9 @@ class sarfa_saliency_map(xrl_method):
                     self.map[frame, row, col] = self.calculate_feature_saliency(blurred_q_values)
 
 
-    def save_intermediate_blurs(self, directory, suffix):
+    def save_intermediate_blurs(self, directory, suffix, version=""):
 
-        new_path = directory + "/set" + str(suffix)
+        new_path = directory + "/set" + str(suffix) + "_v" + str(version)
 
         # Save full blurred states
         self.save_grey_image(np.swapaxes(self.blurred_whole_state[0], 0, 1), new_path + "/blurred_whole_state_0.jpg")

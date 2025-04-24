@@ -114,9 +114,9 @@ class xrl_method:
 
 
     # Function to just save the final blended renders
-    def save_heatmaps(self, directory, suffix):
+    def save_heatmaps(self, directory, suffix, version=""):
 
-        new_path = directory + "/set" + str(suffix)
+        new_path = directory + "/set" + str(suffix) + "_v" + str(version)
         os.mkdir(new_path)
 
         # Print the best action
@@ -130,11 +130,11 @@ class xrl_method:
 
 
     # Function to save all the images relevant to the creation of the heatmaps
-    def save_all_images(self, directory, suffix):
+    def save_all_images(self, directory, suffix, version=""):
 
         # Save heatmap overlays
         self.save_heatmaps(directory, suffix) 
-        new_path = directory + "/set" + str(suffix)
+        new_path = directory + "/set" + str(suffix) + "_v" + str(version)
 
         # Save agent observation
         self.save_grey_image(np.swapaxes(self.agent_obs[0], 0, 1), new_path + "/agent_obs_frame_0.jpg")
