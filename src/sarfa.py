@@ -7,7 +7,7 @@ from utils import get_q_values
 
 class sarfa_saliency_map(xrl_method):
 
-    def __init__(self, agent_obs, rendered_states, q_values):
+    def __init__(self, agent_obs, rendered_states, q_values, blur_sigma, sigma_sqr):
 
         super().__init__(agent_obs, rendered_states, q_values)
 
@@ -24,7 +24,8 @@ class sarfa_saliency_map(xrl_method):
         self.p_rem = np.clip(self.p_rem, self.min_value, 1)
 
         # Blur the whole image
-        self.blur_sigma = 5.0
+        self.sigma_sqr = sigma_sqr
+        self.blur_sigma = blur_sigma
         self.blurred_whole_state = np.array([cv2.GaussianBlur(self.agent_obs[i], (0, 0), self.blur_sigma) for i in range(self.num_frames)])
         self.normalised_blurred_state = np.copy(self.blurred_whole_state)
         self.normalised_blurred_state = self.normalised_blurred_state.astype(np.float32) / 255.0
@@ -71,14 +72,13 @@ class sarfa_saliency_map(xrl_method):
     def perturb_state(self, frame, pixel_row, pixel_col):
 
         # Define constants for use in the Gaussian mask
-        sigma_sqr = 25.0
-        denom_gaus = 2 * np.pi * sigma_sqr
+        denom_gaus = 2 * np.pi * self.sigma_sqr
 
         # Create the Gaussian mask using numpy broadcasting
         row, col = np.indices(self.map[0].shape)
         x_gaus_sqr = (row - pixel_row) ** 2
         y_gaus_sqr = (col - pixel_col) ** 2
-        exponent_gaus = np.exp(-1 * ((x_gaus_sqr + y_gaus_sqr) / (2 * sigma_sqr)))
+        exponent_gaus = np.exp(-1 * ((x_gaus_sqr + y_gaus_sqr) / (2 * self.sigma_sqr)))
         
         # Set a minimum value in the mask and normalise to [0,1]
         mask = np.clip(exponent_gaus / denom_gaus, 1e-10, 1)

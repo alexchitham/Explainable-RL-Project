@@ -30,24 +30,24 @@ def test_env_loop(agent_directory):
 
 
 
-def create_sarfa_saliency_map(agent_obs, rendered_states, q_values, agent):
+def create_sarfa_saliency_map(agent_obs, rendered_states, q_values, agent, blur_sigma=5.0, sigma_sqr=25.0, pixel_percent_threshold=0.01):
 
     # Remove the batch dimension before passing through to the saliency map object
     batchless_state = np.squeeze(agent_obs)
 
     # Create a saliency map object
-    saliency_map = sarfa_saliency_map(batchless_state, rendered_states, q_values)
+    saliency_map = sarfa_saliency_map(batchless_state, rendered_states, q_values, blur_sigma, sigma_sqr)
 
     # Calculate the saliency for each pixel
     saliency_map.calculate_saliency(agent)
 
     # Upscale the saliency map to match the rendered image
-    saliency_map.upscale_map()
+    saliency_map.upscale_map(pixel_percent_threshold)
 
     return saliency_map
 
 
-def create_sverl_map(agent_obs, rendered_states, q_values, shapley_func_weights_dir):
+def create_sverl_map(agent_obs, rendered_states, q_values, shapley_func_weights_dir, pixel_percent_threshold=0.01):
 
     # Remove the batch dimension before passing through to the saliency map object
     batchless_state = np.squeeze(agent_obs)
@@ -59,7 +59,7 @@ def create_sverl_map(agent_obs, rendered_states, q_values, shapley_func_weights_
     sverl_object.predict_shapley_values()
 
     # Upscale the generated map
-    sverl_object.upscale_map()
+    sverl_object.upscale_map(pixel_percent_threshold)
 
     return sverl_object
 

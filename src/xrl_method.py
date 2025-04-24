@@ -45,13 +45,13 @@ class xrl_method:
 
     
     # Function to normalise the map to have values of either 255 (salient) or 0 (not salient)
-    def normalise_map(self):
+    def normalise_map(self, pixel_percent_threshold):
 
         # Normalise the saliency values to [0, 255]
         self.normalised_map = ((self.map - np.min(self.map)) / (np.max(self.map) - np.min(self.map))) * 255
 
         # Highlight the top 1% of most salient pixels
-        percent = 0.01
+        percent = pixel_percent_threshold
 
         # Find the number of pixels to keep in the heatmap using `percent`
         cut_off = int(self.num_pixels * self.num_frames * (1 - percent))
@@ -78,10 +78,10 @@ class xrl_method:
 
 
     # Function to upscale the normalised map to the same resolution as the rendered state
-    def upscale_map(self):
+    def upscale_map(self, pixel_percent_threshold):
         
         # Normalise the map to contain only values of 0 or 255
-        self.normalise_map()
+        self.normalise_map(pixel_percent_threshold)
 
         # Swap the axes so the map matches the orientation of the rendered state
         self.normalised_map = np.swapaxes(self.normalised_map, 1, 2)
