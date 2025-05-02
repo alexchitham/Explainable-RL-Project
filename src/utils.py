@@ -1,6 +1,8 @@
 
 import numpy as np
 import torch
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # Function to retrieve the q-values from an agent in a given state
 def get_q_values(agent, states):
@@ -40,3 +42,59 @@ def get_action_probabilities(agent, states, softmax=True):
         action_probs[torch.arange(batch_size), most_probable_action] = 1.0
 
     return action_probs
+
+
+def plot_loss_graph():
+
+    loss_directories = [
+    "highway-env/sverl/training_csv_outputs/char_val_loss200k_v1.csv",
+    "highway-env/sverl/training_csv_outputs/char_val_loss200k_v3.csv",
+    "highway-env/sverl/training_csv_outputs/char_val_loss200k_v2.csv",
+    ]
+
+    labels = [
+    "Default Hyperparameters",
+    "Experiment 4 (Mask Value changed)",
+    "Experiment 5 (Action Probabilities changed)",
+    ]
+
+    # loss_directories = [
+    # "highway-env/sverl/training_csv_outputs/shap_val_loss100k_v1.csv",
+    # "highway-env/sverl/training_csv_outputs/shap_val_loss100k_v3.csv",
+    # "highway-env/sverl/training_csv_outputs/shap_val_loss100k_v4.csv",
+    # "highway-env/sverl/training_csv_outputs/shap_val_loss100k_v2.csv",
+    # ]
+
+    # labels = [
+    # "Default Hyperparameters",
+    # "Experiment 3 (Batch Size changed)",
+    # "Experiment 4 (Mask Value changed)",
+    # "Experiment 5 (Action Probabilities changed)",
+    # ]
+
+    plt.rcParams.update({'font.size': 14})
+
+    plt.figure(figsize=(10, 6))  # Larger figure for clarity
+
+    for dir_path, label in zip(loss_directories, labels):
+        # Load CSV
+        df = pd.read_csv(dir_path)
+        starting_index = 2
+        # starting_index = 15
+
+        # Apply moving average smoothing
+        # loss = df["loss"][starting_index:]
+        loss = df["loss"][starting_index:].rolling(window=40).mean()
+        # loss = df["loss"][starting_index:].rolling(window=100).mean()
+
+        # Plot smoothed loss
+        plt.plot(df["batch"][starting_index:], loss, label=label, alpha=0.6, linewidth=2.0)
+
+    # Customize plot
+    plt.xlabel("Batch")
+    plt.ylabel("Loss")
+    plt.title("Characteristic Value Function Average Loss (Smoothed)")
+    # plt.title("Shapley Value Function Average Loss (Smoothed)")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
